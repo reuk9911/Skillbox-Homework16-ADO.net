@@ -1,0 +1,29 @@
+﻿<Window x:Class="Homework16.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Homework16"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="90*"/>
+            <RowDefinition Height="5*" MinHeight="15"/>
+            <RowDefinition Height="5*" MinHeight="15"/>
+        </Grid.RowDefinitions>
+        <StatusBar Grid.Row="1" 
+                   Margin="0,0,0,0">
+            <StatusBarItem>
+                <TextBlock Text="SQLConnection status:"/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock 
+                    x:Name="TextBlockConState"
+                    Text="{Binding Path=State}"/>
+                
+            </StatusBarItem>
+        </StatusBar>
+        
+    </Grid>
+</Window>

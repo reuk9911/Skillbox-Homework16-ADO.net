@@ -42,8 +42,7 @@ namespace Homework16
             {
                 DataSource = @"(localdb)\MSSQLLocalDB",
                 InitialCatalog = "ClientsDb",
-                AttachDBFilename = @"C:\Users\reuk\source\repos
-                                    \Homework16\Homework16\Db\ClientsDb.mdf",
+                AttachDBFilename = @"C:\Users\reuk\source\repos\Homework16\Homework16\Db\ClientsDb.mdf",
                 UserID = "user0",
                 Password = "123"
             };
@@ -53,7 +52,15 @@ namespace Homework16
             da = new SqlDataAdapter();
 
             TextBlockConState.DataContext = con;
-            con.Open();
+            try
+            {
+                con.Open();
+            }
+            catch (Exception ex)
+            {
+                con.Close();
+            }
+
 
 
             #endregion

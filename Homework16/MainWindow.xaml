@@ -14,20 +14,32 @@
 
         </Grid.ColumnDefinitions>
         
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="90*"/>
             <RowDefinition Height="5*" MinHeight="15"/>
         </Grid.RowDefinitions>
         <StatusBar Grid.Row="1" 
-                   Margin="0,0,0,0">
+                   Margin="0,0,0,0"
+                   Grid.ColumnSpan="3"
+                   >
             <StatusBarItem>
                 <TextBlock Text="SQLConnection status:"/>
             </StatusBarItem>
             <StatusBarItem>
                 <TextBlock 
-                    x:Name="TextBlockConState"
-                    Text="{Binding Path=State}"/>
-                
+                    x:Name="TextBlockSQLConState"
+                    Text="{Binding}"/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="AccessConnection status:"/>
+            </StatusBarItem>
+            
+            <StatusBarItem>
+                <TextBlock 
+                x:Name="TextBlockAccessConState"
+                Text="{Binding}"/>
+
             </StatusBarItem>
         </StatusBar>
         

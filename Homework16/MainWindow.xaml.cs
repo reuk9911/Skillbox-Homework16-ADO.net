@@ -28,17 +28,59 @@ namespace Homework16
         DataTable dt;
         DataRowView row;
 
+        Database Db;
+
         public MainWindow()
         {
             InitializeComponent(); Preparing();
 
         }
 
+        //private void Preparing2()
+        //{
+        //    #region Init
+        //    //string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\\Users\\reuk\\source\\repos\\Homework16\\Homework16\\Db\\PurchasesDb.accdb";
+        //    //OleDbConnection connection = new OleDbConnection(connectionString);
+        //    //connection.Open();
+
+        //    var connectionStringBuilder = new SqlConnectionStringBuilder
+        //    {
+        //        DataSource = @"(localdb)\MSSQLLocalDB",
+        //        InitialCatalog = "ClientsDb",
+        //        AttachDBFilename = @"C:\Users\reuk\source\repos\Homework16\Homework16\Db\ClientsDb.mdf",
+        //        UserID = "user0",
+        //        Password = "123"
+        //    };
+
+        //    dt = new DataTable();
+        //    da = new SqlDataAdapter();
+        //    con = new SqlConnection(connectionStringBuilder.ConnectionString);
+
+        //    TextBlockConState.DataContext = con;
+        //    try
+        //    {
+        //        con.Open();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        con.Close();
+        //    }
+
+
+
+        //    #endregion
+        //}
         private void Preparing()
         {
             #region Init
 
-            var connectionStringBuilder = new SqlConnectionStringBuilder
+
+
+            //string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\\Users\\reuk\\source\\repos\\Homework16\\Homework16\\Db\\PurchasesDb.accdb";
+            //OleDbConnection connection = new OleDbConnection(connectionString);
+            //connection.Open();
+
+            var SQLConString = new SqlConnectionStringBuilder
             {
                 DataSource = @"(localdb)\MSSQLLocalDB",
                 InitialCatalog = "ClientsDb",
@@ -47,19 +89,18 @@ namespace Homework16
                 Password = "123"
             };
 
-            con = new SqlConnection(connectionStringBuilder.ConnectionString);
-            dt = new DataTable();
-            da = new SqlDataAdapter();
+            var AccConString = new OleDbConnectionStringBuilder
+            {
+                Provider = "Microsoft.ACE.OLEDB.12.0",
+                DataSource = @"C:\Users\reuk\source\repos\Homework16\Homework16\Db\PurchasesDb.accdb"
+            };
 
-            TextBlockConState.DataContext = con;
-            try
-            {
-                con.Open();
-            }
-            catch (Exception ex)
-            {
-                con.Close();
-            }
+            Db = new Database(SQLConString.ConnectionString, 
+                AccConString.ConnectionString);
+
+            TextBlockSQLConState.DataContext = Db.sqlCon.State;
+            TextBlockAccessConState.DataContext = Db.accessCon.State;
+            
 
 
 

@@ -43,6 +43,7 @@
 
             </StatusBarItem>
         </StatusBar>
+        <!--sqlGridView-->
         <DataGrid x:Name="sqlGridView"
           ItemsSource="{Binding}"   
           IsSynchronizedWithCurrentItem="True"
@@ -53,33 +54,68 @@
           Grid.Column="0">
 
             <DataGrid.Columns>
-                <DataGridTextColumn x:Name="id" 
+                <DataGridTextColumn x:Name="idSql" 
                             Binding="{Binding id}" 
                             Header="Id" 
                             IsReadOnly="True"/>
 
-                <DataGridTextColumn x:Name="firstName" 
+                <DataGridTextColumn x:Name="firstNameSql" 
                             Binding="{Binding firstName}" 
                             Header="Имя"/>
 
-                <DataGridTextColumn x:Name="lastName" 
+                <DataGridTextColumn x:Name="lastNameSql" 
                             Binding="{Binding lastName}" 
                             Header="Фамилия"/>
 
-                <DataGridTextColumn x:Name="middleName" 
+                <DataGridTextColumn x:Name="middleNameSql" 
                             Binding="{Binding middleName}" 
                             Header="Отчество"/>
 
-                <DataGridTextColumn x:Name="phone" 
+                <DataGridTextColumn x:Name="phoneSql" 
             Binding="{Binding phone}" 
             Header="Телефон"/>
 
-                <DataGridTextColumn x:Name="email" 
+                <DataGridTextColumn x:Name="emailSql" 
             Binding="{Binding email}" 
             Header="email"/>
 
 
             </DataGrid.Columns>
         </DataGrid>
+        <!--///// sqlGridView /////-->
+
+        
+        <!--accessGridView-->
+        <DataGrid x:Name="accessGridView"
+            ItemsSource="{Binding}"   
+            IsSynchronizedWithCurrentItem="True"
+            SelectionMode="Single" 
+            AutoGenerateColumns="False" 
+            IsReadOnly="False" 
+            Grid.Column="1">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn x:Name="idAccess" 
+                    Binding="{Binding id}" 
+                    Header="Id" 
+                    IsReadOnly="True"/>
+
+                <DataGridTextColumn x:Name="emailAccess" 
+                    Binding="{Binding email}" 
+                    Header="email"/>
+
+                <DataGridTextColumn x:Name="productCodeAccess" 
+                    Binding="{Binding productCode}" 
+                    Header="Код товара"/>
+
+                <DataGridTextColumn x:Name="productNameAccess" 
+                    Binding="{Binding productName}" 
+                    Header="Наименование товара"/>
+
+            </DataGrid.Columns>
+        </DataGrid>
+        <!--////// accessGridView //////-->
+
+
     </Grid>
 </Window>

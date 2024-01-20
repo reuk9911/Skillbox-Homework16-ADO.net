@@ -102,7 +102,7 @@ namespace Homework16
             TextBlockAccessConState.DataContext = Db.AccessCon.State;
 
             sqlGridView.DataContext = Db.SQLDt.DefaultView;
-            //accessGridView.DataContext = Db.AccessDt.DefaultView;
+            accessGridView.DataContext = Db.AccessDt.DefaultView;
 
 
 

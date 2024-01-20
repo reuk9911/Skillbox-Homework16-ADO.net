@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Homework16"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="600" Width="1200">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="4*"/>
@@ -13,8 +13,9 @@
             <ColumnDefinition Width="2*"/>
 
         </Grid.ColumnDefinitions>
-        
-        
+
+
+
         <Grid.RowDefinitions>
             <RowDefinition Height="90*"/>
             <RowDefinition Height="5*" MinHeight="15"/>
@@ -42,6 +43,43 @@
 
             </StatusBarItem>
         </StatusBar>
-        
+        <DataGrid x:Name="sqlGridView"
+          ItemsSource="{Binding}"   
+          IsSynchronizedWithCurrentItem="True"
+          SelectionMode="Single" 
+          AutoGenerateColumns="False" 
+          
+          IsReadOnly="False" 
+          Grid.Column="0">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn x:Name="id" 
+                            Binding="{Binding id}" 
+                            Header="Id" 
+                            IsReadOnly="True"/>
+
+                <DataGridTextColumn x:Name="firstName" 
+                            Binding="{Binding firstName}" 
+                            Header="Имя"/>
+
+                <DataGridTextColumn x:Name="lastName" 
+                            Binding="{Binding lastName}" 
+                            Header="Фамилия"/>
+
+                <DataGridTextColumn x:Name="middleName" 
+                            Binding="{Binding middleName}" 
+                            Header="Отчество"/>
+
+                <DataGridTextColumn x:Name="phone" 
+            Binding="{Binding phone}" 
+            Header="Телефон"/>
+
+                <DataGridTextColumn x:Name="email" 
+            Binding="{Binding email}" 
+            Header="email"/>
+
+
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>

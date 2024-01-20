@@ -98,9 +98,11 @@ namespace Homework16
             Db = new Database(SQLConString.ConnectionString, 
                 AccConString.ConnectionString);
 
-            TextBlockSQLConState.DataContext = Db.sqlCon.State;
-            TextBlockAccessConState.DataContext = Db.accessCon.State;
-            
+            TextBlockSQLConState.DataContext = Db.SQLCon.State;
+            TextBlockAccessConState.DataContext = Db.AccessCon.State;
+
+            sqlGridView.DataContext = Db.SQLDt.DefaultView;
+            //accessGridView.DataContext = Db.AccessDt.DefaultView;
 
 
 

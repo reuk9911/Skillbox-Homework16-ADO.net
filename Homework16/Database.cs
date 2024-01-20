@@ -17,8 +17,8 @@ namespace Homework16
         private SqlDataAdapter SQLDa;
         private OleDbDataAdapter AccessDa;
 
-        public SqlConnection sqlCon { get; private set; }
-        public OleDbConnection accessCon { get; private set; }
+        public SqlConnection SQLCon { get; private set; }
+        public OleDbConnection AccessCon { get; private set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -58,35 +58,45 @@ namespace Homework16
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
         }
 
-        public Database(string SQLCon, string AccessCon)
+        public Database(string SQLConString, string AccessConString)
         {
-            sqlCon = new SqlConnection(SQLCon);
-            accessCon = new OleDbConnection(AccessCon);
-            FillDb(sqlCon.ConnectionString, accessCon.ConnectionString);
+            SQLCon = new SqlConnection(SQLConString);
+            SQLDt = new DataTable("Clients");
+            string sql = @"SELECT * FROM Clients";
+            SQLCon.Open();
+
+            SQLDa = new SqlDataAdapter(sql, SQLCon);
+            SQLDa.Fill(SQLDt);
+
             
-        }
-
-        public void FillDb(string SQLCon, string AccessCon)
-        {
-            string sql;
-            sql = "SELECT * FROM Clients";
-
-            sqlCon.Open();
-            DataTable sqlDt = new DataTable("Clients");
-            SQLDa = new SqlDataAdapter(sql, sqlCon);
-            SQLDa.Fill(sqlDt);
-            sqlCon.Close();
-
-
+            AccessCon = new OleDbConnection(AccessConString);
+            AccessDt = new DataTable("Purchases");
             sql = "SELECT * FROM Purchases";
-            accessCon.Open();
-            OleDbDataAdapter adapter = new OleDbDataAdapter(sql, accessCon);
-            DataTable accessDt = new DataTable("Purchases");
-            AccessDa = new OleDbDataAdapter(sql, accessCon);
-            AccessDa.Fill(accessDt);
-            accessCon.Close();
+            AccessCon.Open();
+
+            AccessDa = new OleDbDataAdapter(sql, AccessCon);
+            AccessDa.Fill(AccessDt);
 
         }
+
+        //public void FillDb(string SQLCon, string AccessCon)
+        //{
+            
+        //    //sql = "SELECT * FROM Clients";
+            
+        //    //sqlCon.Close();
+
+
+        //    string sql = "SELECT * FROM Purchases";
+        //    this.AccessCon.Open();
+        //    OleDbDataAdapter adapter = new OleDbDataAdapter(sql, this.AccessCon);
+        //    DataTable accessDt = new DataTable("Purchases");
+        //    AccessDa = new OleDbDataAdapter(sql, this.AccessCon);
+        //    AccessDa.Fill(accessDt);
+        //    //accessCon.Close();
+
+        //}
+        
 
 
     }

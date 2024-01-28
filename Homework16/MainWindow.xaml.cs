@@ -101,8 +101,8 @@ namespace Homework16
             TextBlockSQLConState.DataContext = Db.SQLCon.State;
             TextBlockAccessConState.DataContext = Db.AccessCon.State;
 
-            sqlGridView.DataContext = Db.SQLDt.DefaultView;
-            accessGridView.DataContext = Db.AccessDt.DefaultView;
+            sqlGridView.DataContext = Db.Ds.Tables["Clients"].DefaultView;
+            accessGridView.DataContext = Db.Ds.Tables["Purchases"].DefaultView;
 
 
 

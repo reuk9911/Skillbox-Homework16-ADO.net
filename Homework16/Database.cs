@@ -22,10 +22,10 @@ namespace Homework16
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        //public DataSet Ds { get; private set; }
+        public DataSet Ds { get; private set; }
 
-        public DataTable SQLDt { get; private set; }
-        public DataTable AccessDt { get; private set; }
+        private DataTable SQLDt;
+        private DataTable AccessDt;
 
         //public string SQLConState
         //{
@@ -60,9 +60,12 @@ namespace Homework16
 
         public Database(string SQLConString, string AccessConString)
         {
+            
+
             SQLCon = new SqlConnection(SQLConString);
             SQLDt = new DataTable("Clients");
             string sql = @"SELECT * FROM Clients";
+            
             SQLCon.Open();
 
             SQLDa = new SqlDataAdapter(sql, SQLCon);
@@ -76,7 +79,11 @@ namespace Homework16
 
             AccessDa = new OleDbDataAdapter(sql, AccessCon);
             AccessDa.Fill(AccessDt);
-
+            Ds = new DataSet();
+            Ds.Tables.Add(SQLDt);
+            Ds.Tables.Add(AccessDt);
+            SQLCon.Close();
+            AccessCon.Close();
         }
 
         //public void FillDb(string SQLCon, string AccessCon)

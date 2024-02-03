@@ -11,11 +11,13 @@ using System.Runtime.CompilerServices;
 
 namespace Homework16
 {
-    public class Database:INotifyPropertyChanged
+    public class Database : INotifyPropertyChanged
     {
 
         private SqlDataAdapter SQLDa;
         private OleDbDataAdapter AccessDa;
+        private string sqlConState;
+        private string accessConState;
 
         public SqlConnection SQLCon { get; private set; }
         public OleDbConnection AccessCon { get; private set; }
@@ -27,30 +29,34 @@ namespace Homework16
         private DataTable SQLDt;
         private DataTable AccessDt;
 
-        //public string SQLConState
-        //{
-        //    get 
-        //    {
-        //        return sqlCon.State.ToString();
-        //    }
-        //    set 
-        //    {
-        //        if (SQLConState != value)
-        //        {
-        //            SQLConState = value;
-        //            OnPropertyChanged("SQLConState");
-        //        }
-        //    }
-        //}
-        
-        //public string AccessConState 
-        //{
-        //    get 
-        //    {
-        //        OnPropertyChanged("AccessConState");
-        //        return accessCon.State.ToString(); 
-        //    }
-        //}
+        public string SQLConState
+        {
+            get => this.sqlConState;
+            set 
+            {
+                if (sqlConState!=value)
+                {
+                    sqlConState = value;
+                    OnPropertyChanged(nameof(SQLConState));
+                }
+
+            }
+
+        }
+
+        public string AccessConState
+        {
+            get => this.accessConState;
+            set
+            {
+                if (accessConState != value)
+                {
+                    accessConState = value;
+                    OnPropertyChanged(nameof(AccessConState));
+                }
+
+            }
+        }
 
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
@@ -60,51 +66,51 @@ namespace Homework16
 
         public Database(string SQLConString, string AccessConString)
         {
-            
+            sqlConState = "Unknown";
+            accessConState = "Unknown";
 
             SQLCon = new SqlConnection(SQLConString);
             SQLDt = new DataTable("Clients");
             string sql = @"SELECT * FROM Clients";
             
-            SQLCon.Open();
+            if (SQLCon.State!= ConnectionState.Closed) 
+                SQLCon.Close();
+            
 
+            SQLCon.Open();
             SQLDa = new SqlDataAdapter(sql, SQLCon);
             SQLDa.Fill(SQLDt);
+            //SQLCon.Close();
 
-            
             AccessCon = new OleDbConnection(AccessConString);
             AccessDt = new DataTable("Purchases");
             sql = "SELECT * FROM Purchases";
-            AccessCon.Open();
 
+            if (AccessCon.State != ConnectionState.Closed)
+                AccessCon.Close();
+            AccessCon.Open();
             AccessDa = new OleDbDataAdapter(sql, AccessCon);
             AccessDa.Fill(AccessDt);
+            //AccessCon.Close();
+
             Ds = new DataSet();
             Ds.Tables.Add(SQLDt);
             Ds.Tables.Add(AccessDt);
-            SQLCon.Close();
-            AccessCon.Close();
+
+            sqlConState = SQLCon.State.ToString();
+            accessConState = AccessCon.State.ToString();
+            SQLCon.StateChange += SQLCon_StateChange;
+            AccessCon.StateChange += AccessCon_StateChange;
         }
 
-        //public void FillDb(string SQLCon, string AccessCon)
-        //{
-            
-        //    //sql = "SELECT * FROM Clients";
-            
-        //    //sqlCon.Close();
+        private void AccessCon_StateChange(object sender, StateChangeEventArgs e)
+        {
+            this.AccessConState = e.CurrentState.ToString();
+        }
 
-
-        //    string sql = "SELECT * FROM Purchases";
-        //    this.AccessCon.Open();
-        //    OleDbDataAdapter adapter = new OleDbDataAdapter(sql, this.AccessCon);
-        //    DataTable accessDt = new DataTable("Purchases");
-        //    AccessDa = new OleDbDataAdapter(sql, this.AccessCon);
-        //    AccessDa.Fill(accessDt);
-        //    //accessCon.Close();
-
-        //}
-        
-
-
+        private void SQLCon_StateChange(object sender, StateChangeEventArgs e)
+        {
+            this.SQLConState = e.CurrentState.ToString();
+        }
     }
 }

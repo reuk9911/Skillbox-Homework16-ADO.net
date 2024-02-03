@@ -30,7 +30,7 @@
             <StatusBarItem>
                 <TextBlock 
                     x:Name="TextBlockSQLConState"
-                    Text="{Binding}"/>
+                    Text="{Binding Path=SQLConState}"/>
             </StatusBarItem>
             <StatusBarItem>
                 <TextBlock Text="AccessConnection status:"/>
@@ -39,7 +39,7 @@
             <StatusBarItem>
                 <TextBlock 
                 x:Name="TextBlockAccessConState"
-                Text="{Binding}"/>
+                Text="{Binding Path=AccessConState}"/>
 
             </StatusBarItem>
         </StatusBar>
@@ -105,7 +105,7 @@
                     Header="email"/>
 
                 <DataGridTextColumn x:Name="productCodeAccess" 
-                    Binding="{Binding productCode}" 
+                    Binding="{Binding procuctCode}" 
                     Header="Код товара"/>
 
                 <DataGridTextColumn x:Name="productNameAccess" 
@@ -114,6 +114,7 @@
 
             </DataGrid.Columns>
         </DataGrid>
+        <Button Grid.Column="2" Content="Button" HorizontalAlignment="Center" Margin="0,61,0,0" VerticalAlignment="Top" Click="Button_Click"/>
         <!--////// accessGridView //////-->
 
 

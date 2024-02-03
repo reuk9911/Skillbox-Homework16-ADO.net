@@ -98,15 +98,41 @@ namespace Homework16
             Db = new Database(SQLConString.ConnectionString, 
                 AccConString.ConnectionString);
 
-            TextBlockSQLConState.DataContext = Db.SQLCon.State;
-            TextBlockAccessConState.DataContext = Db.AccessCon.State;
+            TextBlockSQLConState.DataContext = Db;
+            TextBlockAccessConState.DataContext = Db;
+
+
 
             sqlGridView.DataContext = Db.Ds.Tables["Clients"].DefaultView;
             accessGridView.DataContext = Db.Ds.Tables["Purchases"].DefaultView;
 
+            
+            
+
 
 
             #endregion
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (Db.SQLCon.State == ConnectionState.Open)
+            {
+                Db.SQLCon.Close();
+            }
+            //if (Db.SQLCon.State == ConnectionState.Closed)
+            //{
+            //    Db.SQLCon.Open();
+
+            //}
+            if (Db.AccessCon.State == ConnectionState.Open)
+            {
+                Db.AccessCon.Close();
+            }
+            //if (Db.AccessCon.State == ConnectionState.Closed)
+            //{
+            //    Db.AccessCon.Open();
+            //}
         }
     }
 }

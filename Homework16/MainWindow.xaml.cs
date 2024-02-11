@@ -32,7 +32,7 @@ namespace Homework16
 
         public MainWindow()
         {
-            InitializeComponent(); Preparing();
+            InitializeComponent(); 
 
         }
 
@@ -70,7 +70,7 @@ namespace Homework16
 
         //    #endregion
         //}
-        private void Preparing()
+        private async Task Preparing()
         {
             #region Init
 
@@ -95,7 +95,11 @@ namespace Homework16
                 DataSource = @"C:\Users\reuk\source\repos\Homework16\Homework16\Db\PurchasesDb.accdb"
             };
 
-            Db = new Database(SQLConString.ConnectionString, 
+            //Db = new Database(SQLConString.ConnectionString, 
+            //    AccConString.ConnectionString);
+            Db = new Database();
+
+            await Db.Connect(SQLConString.ConnectionString,
                 AccConString.ConnectionString);
 
             TextBlockSQLConState.DataContext = Db;
@@ -133,6 +137,11 @@ namespace Homework16
             //{
             //    Db.AccessCon.Open();
             //}
+        }
+
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            await Preparing();
         }
     }
 }

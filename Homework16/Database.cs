@@ -102,6 +102,55 @@ namespace Homework16
             SQLCon.StateChange += SQLCon_StateChange;
             AccessCon.StateChange += AccessCon_StateChange;
         }
+        public Database()
+        {
+            sqlConState = "Unknown";
+            accessConState = "Unknown";
+        }
+
+
+        public async Task Connect(string SQLConString, string AccessConString) 
+        {
+            sqlConState = "Unknown";
+            accessConState = "Unknown";
+
+            SQLCon = new SqlConnection(SQLConString);
+            SQLDt = new DataTable("Clients");
+            string sql = @"SELECT * FROM Clients";
+
+            //if (SQLCon.State != ConnectionState.Closed)
+            //    await SQLCon.CloseAsync();
+
+
+            await SQLCon.OpenAsync();
+            SQLDa = new SqlDataAdapter(sql, SQLCon);
+            SQLDa.Fill(SQLDt);
+            await SQLCon.CloseAsync();
+
+            AccessCon = new OleDbConnection(AccessConString);
+            AccessDt = new DataTable("Purchases");
+            sql = "SELECT * FROM Purchases";
+
+            //if (AccessCon.State != ConnectionState.Closed)
+            //    await AccessCon.CloseAsync();
+            await AccessCon.OpenAsync();
+            AccessDa = new OleDbDataAdapter(sql, AccessCon);
+            AccessDa.Fill(AccessDt);
+            await AccessCon.CloseAsync();
+
+            Ds = new DataSet();
+            Ds.Tables.Add(SQLDt);
+            Ds.Tables.Add(AccessDt);
+
+            sqlConState = SQLCon.State.ToString();
+            accessConState = AccessCon.State.ToString();
+            SQLCon.StateChange += SQLCon_StateChange;
+            AccessCon.StateChange += AccessCon_StateChange;
+
+        }
+
+        
+
 
         private void AccessCon_StateChange(object sender, StateChangeEventArgs e)
         {

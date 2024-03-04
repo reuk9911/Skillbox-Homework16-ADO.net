@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Data;
+using System.Security.Cryptography;
 
 namespace Homework16
 {
@@ -23,9 +24,9 @@ namespace Homework16
     /// </summary>
     public partial class MainWindow : Window
     {
-        SqlConnection con;
-        SqlDataAdapter da;
-        DataTable dt;
+        //SqlConnection con;
+        //SqlDataAdapter da;
+        //DataTable dt;
         DataRowView row;
 
         Database Db;
@@ -36,40 +37,6 @@ namespace Homework16
 
         }
 
-        //private void Preparing2()
-        //{
-        //    #region Init
-        //    //string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\\Users\\reuk\\source\\repos\\Homework16\\Homework16\\Db\\PurchasesDb.accdb";
-        //    //OleDbConnection connection = new OleDbConnection(connectionString);
-        //    //connection.Open();
-
-        //    var connectionStringBuilder = new SqlConnectionStringBuilder
-        //    {
-        //        DataSource = @"(localdb)\MSSQLLocalDB",
-        //        InitialCatalog = "ClientsDb",
-        //        AttachDBFilename = @"C:\Users\reuk\source\repos\Homework16\Homework16\Db\ClientsDb.mdf",
-        //        UserID = "user0",
-        //        Password = "123"
-        //    };
-
-        //    dt = new DataTable();
-        //    da = new SqlDataAdapter();
-        //    con = new SqlConnection(connectionStringBuilder.ConnectionString);
-
-        //    TextBlockConState.DataContext = con;
-        //    try
-        //    {
-        //        con.Open();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        con.Close();
-        //    }
-
-
-
-        //    #endregion
-        //}
         private async Task Preparing()
         {
             #region Init
@@ -84,22 +51,22 @@ namespace Homework16
             {
                 DataSource = @"(localdb)\MSSQLLocalDB",
                 InitialCatalog = "ClientsDb",
-                AttachDBFilename = @"C:\Users\reuk\source\repos\Homework16\Homework16\Db\ClientsDb.mdf",
+                AttachDBFilename = @"C:\repos\Homework16\Homework16\Db\ClientsDb.mdf",
                 UserID = "user0",
-                Password = "123"
+                Password = "12345"
             };
 
             var AccConString = new OleDbConnectionStringBuilder
             {
                 Provider = "Microsoft.ACE.OLEDB.12.0",
-                DataSource = @"C:\Users\reuk\source\repos\Homework16\Homework16\Db\PurchasesDb.accdb"
+                DataSource = @"C:\repos\Homework16\Homework16\Db\PurchasesDb.accdb"
             };
 
             //Db = new Database(SQLConString.ConnectionString, 
             //    AccConString.ConnectionString);
             Db = new Database();
 
-            await Db.Connect(SQLConString.ConnectionString,
+            Db.GetData2(SQLConString.ConnectionString,
                 AccConString.ConnectionString);
 
             TextBlockSQLConState.DataContext = Db;
@@ -142,6 +109,58 @@ namespace Homework16
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             await Preparing();
+        }
+
+        private void sqlGridView_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            row = (DataRowView)sqlGridView.SelectedItem;
+            row.BeginEdit();
+
+        }
+
+        private void sqlGridView_CurrentCellChanged(object sender, EventArgs e)
+        {
+            if (row == null) return;
+            row.EndEdit();
+            Db.SQLDa.Update(Db.Ds, "Clients");
+        }
+
+        private void sqlGridView_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        {
+            //row.EndEdit();
+            //row = (DataRowView)sqlGridView.SelectedItem;
+            //Db.SQLDa.Update(Db.SQLDt);
+        }
+
+        /// <summary>
+        /// Удаление клиента
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MenuItemDeleteClientClick(object sender, RoutedEventArgs e)
+        {
+            row = (DataRowView)sqlGridView.SelectedItem;
+            row.Row.Delete();
+            Db.SQLDa.Update(Db.Ds, "Clients");
+        }
+
+        /// <summary>
+        /// Добавление клиента
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MenuItemAddClientClick(object sender, RoutedEventArgs e)
+        {
+            DataRow r = Db.Ds.Tables["Clients"].NewRow();
+            AddClientWindow add = new AddClientWindow(r);
+            add.ShowDialog();
+
+
+            if (add.DialogResult.Value)
+            {
+                Db.Ds.Tables["Clients"].Rows.Add(r);
+                Db.SQLDa.Update(Db.Ds, "Clients");
+            }
         }
     }
 }

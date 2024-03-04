@@ -14,8 +14,8 @@ namespace Homework16
     public class Database : INotifyPropertyChanged
     {
 
-        private SqlDataAdapter SQLDa;
-        private OleDbDataAdapter AccessDa;
+        public SqlDataAdapter SQLDa;
+        public OleDbDataAdapter AccessDa;
         private string sqlConState;
         private string accessConState;
 
@@ -26,8 +26,8 @@ namespace Homework16
 
         public DataSet Ds { get; private set; }
 
-        private DataTable SQLDt;
-        private DataTable AccessDt;
+        public DataTable SQLDt;
+        public DataTable AccessDt;
 
         public string SQLConState
         {
@@ -64,7 +64,54 @@ namespace Homework16
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
         }
 
-        public Database(string SQLConString, string AccessConString)
+        //public Database(string SQLConString, string AccessConString)
+        //{
+        //    sqlConState = "Unknown";
+        //    accessConState = "Unknown";
+
+        //    SQLCon = new SqlConnection(SQLConString);
+        //    SQLDt = new DataTable("Clients");
+        //    string sql = @"SELECT * FROM Clients";
+            
+        //    if (SQLCon.State!= ConnectionState.Closed) 
+        //        SQLCon.Close();
+            
+
+        //    SQLCon.Open();
+        //    SQLDa = new SqlDataAdapter(sql, SQLCon);
+        //    SQLDa.Fill(SQLDt);
+        //    //SQLCon.Close();
+
+        //    AccessCon = new OleDbConnection(AccessConString);
+        //    AccessDt = new DataTable("Purchases");
+        //    sql = "SELECT * FROM Purchases";
+
+        //    if (AccessCon.State != ConnectionState.Closed)
+        //        AccessCon.Close();
+        //    AccessCon.Open();
+        //    AccessDa = new OleDbDataAdapter(sql, AccessCon);
+        //    AccessDa.Fill(AccessDt);
+        //    //AccessCon.Close();
+
+        //    Ds = new DataSet();
+        //    Ds.Tables.Add(SQLDt);
+        //    Ds.Tables.Add(AccessDt);
+
+        //    sqlConState = SQLCon.State.ToString();
+        //    accessConState = AccessCon.State.ToString();
+        //    SQLCon.StateChange += SQLCon_StateChange;
+        //    AccessCon.StateChange += AccessCon_StateChange;
+        //}
+        public Database()
+        {
+            sqlConState = "Unknown";
+            accessConState = "Unknown";
+
+
+        }
+
+
+        public async Task GetData(string SQLConString, string AccessConString) 
         {
             sqlConState = "Unknown";
             accessConState = "Unknown";
@@ -72,67 +119,89 @@ namespace Homework16
             SQLCon = new SqlConnection(SQLConString);
             SQLDt = new DataTable("Clients");
             string sql = @"SELECT * FROM Clients";
-            
-            if (SQLCon.State!= ConnectionState.Closed) 
-                SQLCon.Close();
-            
+            if (SQLCon.State != ConnectionState.Closed)
+                await SQLCon.CloseAsync();
 
-            SQLCon.Open();
+            #region Init
+
+            var connectionStringBuilder = new SqlConnectionStringBuilder
+            {
+                DataSource = @"(localdb)\MSSQLLocalDB",
+                InitialCatalog = "MSSQLLocalDemo"
+            };
+
             SQLDa = new SqlDataAdapter(sql, SQLCon);
+
+            #endregion
+
+            #region select
+
+
+            sql = @"SELECT * FROM Clients Order By Clients.Id";
+            SQLDa.SelectCommand = new SqlCommand(sql, SQLCon);
+
+            #endregion
+
+            #region insert
+
+            sql = @"INSERT INTO Clients (lastName,  firstName,  middleName, phone, email) 
+                                 VALUES (@lastName, @firstName, @middleName, @phone, @email); 
+                     SET @id = @@IDENTITY;";
+
+            SQLDa.InsertCommand = new SqlCommand(sql, SQLCon);
+
+            SQLDa.InsertCommand.Parameters.Add("@id", SqlDbType.Int, 4, "id").Direction = ParameterDirection.Output;
+            SQLDa.InsertCommand.Parameters.Add("@lastName", SqlDbType.NVarChar, 40, "lastName");
+            SQLDa.InsertCommand.Parameters.Add("@firstName", SqlDbType.NVarChar, 40, "firstName");
+            SQLDa.InsertCommand.Parameters.Add("@middleName", SqlDbType.NVarChar, 40, "middleName");
+            SQLDa.InsertCommand.Parameters.Add("@phone", SqlDbType.VarChar, 12, "phone");
+            SQLDa.InsertCommand.Parameters.Add("@email", SqlDbType.NVarChar, 80, "email");
+
+            #endregion
+
+            #region update
+
+            sql = @"UPDATE Clients SET 
+                           lastName = @lastName,
+                           firstName = @firstName, 
+                           middleName = @middleName,
+                           phone = @phone,
+                           email = @email
+                    WHERE id = @id";
+
+            SQLDa.UpdateCommand = new SqlCommand(sql, SQLCon);
+            SQLDa.UpdateCommand.Parameters.Add("@id", SqlDbType.Int, 4, "id").SourceVersion = DataRowVersion.Original;
+            SQLDa.UpdateCommand.Parameters.Add("@lastName", SqlDbType.NVarChar, 40, "lastName");
+            SQLDa.UpdateCommand.Parameters.Add("@firstName", SqlDbType.NVarChar, 40, "firstName");
+            SQLDa.UpdateCommand.Parameters.Add("@middleName", SqlDbType.NVarChar, 40, "middleName");
+            SQLDa.UpdateCommand.Parameters.Add("@phone", SqlDbType.VarChar, 12, "phone");
+            SQLDa.UpdateCommand.Parameters.Add("@email", SqlDbType.NVarChar, 80, "email");
+
+            #endregion
+
+            #region delete
+
+            sql = "DELETE FROM Clients WHERE id = @id";
+
+            SQLDa.DeleteCommand = new SqlCommand(sql, SQLCon);
+            SQLDa.DeleteCommand.Parameters.Add("@id", SqlDbType.Int, 4, "id");
+
+            #endregion
+
+
+            await SQLCon.OpenAsync();
+            
             SQLDa.Fill(SQLDt);
-            //SQLCon.Close();
+            await SQLCon.CloseAsync();
+
+
 
             AccessCon = new OleDbConnection(AccessConString);
             AccessDt = new DataTable("Purchases");
             sql = "SELECT * FROM Purchases";
 
             if (AccessCon.State != ConnectionState.Closed)
-                AccessCon.Close();
-            AccessCon.Open();
-            AccessDa = new OleDbDataAdapter(sql, AccessCon);
-            AccessDa.Fill(AccessDt);
-            //AccessCon.Close();
-
-            Ds = new DataSet();
-            Ds.Tables.Add(SQLDt);
-            Ds.Tables.Add(AccessDt);
-
-            sqlConState = SQLCon.State.ToString();
-            accessConState = AccessCon.State.ToString();
-            SQLCon.StateChange += SQLCon_StateChange;
-            AccessCon.StateChange += AccessCon_StateChange;
-        }
-        public Database()
-        {
-            sqlConState = "Unknown";
-            accessConState = "Unknown";
-        }
-
-
-        public async Task Connect(string SQLConString, string AccessConString) 
-        {
-            sqlConState = "Unknown";
-            accessConState = "Unknown";
-
-            SQLCon = new SqlConnection(SQLConString);
-            SQLDt = new DataTable("Clients");
-            string sql = @"SELECT * FROM Clients";
-
-            //if (SQLCon.State != ConnectionState.Closed)
-            //    await SQLCon.CloseAsync();
-
-
-            await SQLCon.OpenAsync();
-            SQLDa = new SqlDataAdapter(sql, SQLCon);
-            SQLDa.Fill(SQLDt);
-            await SQLCon.CloseAsync();
-
-            AccessCon = new OleDbConnection(AccessConString);
-            AccessDt = new DataTable("Purchases");
-            sql = "SELECT * FROM Purchases";
-
-            //if (AccessCon.State != ConnectionState.Closed)
-            //    await AccessCon.CloseAsync();
+                await AccessCon.CloseAsync();
             await AccessCon.OpenAsync();
             AccessDa = new OleDbDataAdapter(sql, AccessCon);
             AccessDa.Fill(AccessDt);
@@ -142,6 +211,19 @@ namespace Homework16
             Ds.Tables.Add(SQLDt);
             Ds.Tables.Add(AccessDt);
 
+
+            //ForeignKeyConstraint foreignKey = new ForeignKeyConstraint(SQLDt.Columns["email"], AccessDt.Columns["email"])
+            //{
+            //    ConstraintName = "EmailPurchases",
+            //    DeleteRule = Rule.Cascade,
+            //    UpdateRule = Rule.Cascade
+            //};
+            ////добавляем внешний ключ в dataset
+            //Ds.Tables["Clients"].Constraints.Add(foreignKey);
+            //// применяем внешний ключ
+            //Ds.EnforceConstraints = true;
+            //Ds.Relations.Add("EmailPurchases", SQLDt.Columns[5], AccessDt.Columns[1]);
+
             sqlConState = SQLCon.State.ToString();
             accessConState = AccessCon.State.ToString();
             SQLCon.StateChange += SQLCon_StateChange;
@@ -149,7 +231,151 @@ namespace Homework16
 
         }
 
-        
+        public void GetData2(string SQLConString, string AccessConString)
+        {
+            sqlConState = "Unknown";
+            accessConState = "Unknown";
+
+            Ds = new DataSet();
+
+            #region SQLCon
+            
+            SQLCon = new SqlConnection(SQLConString);
+            string sql = @"SELECT * FROM Clients";
+            SQLDa = new SqlDataAdapter(sql, SQLCon);
+            SQLDa.Fill(Ds, "Clients");
+            SetSQLConCommands();
+
+            #endregion
+
+            #region AccessCon
+
+            AccessCon = new OleDbConnection(AccessConString);
+            sql = "SELECT * FROM Purchases";
+            AccessDa = new OleDbDataAdapter(sql, AccessCon);
+            AccessDa.Fill(Ds, "Purchases");
+
+            #endregion
+
+            sqlConState = SQLCon.State.ToString();
+            accessConState = AccessCon.State.ToString();
+            SQLCon.StateChange += SQLCon_StateChange;
+            AccessCon.StateChange += AccessCon_StateChange;
+
+        }
+
+        private void SetSQLConCommands() 
+        {
+
+            #region select
+
+
+            string sql = @"SELECT * FROM Clients Order By Clients.Id";
+            SQLDa.SelectCommand = new SqlCommand(sql, SQLCon);
+
+            #endregion
+
+            #region insert
+
+            sql = @"INSERT INTO Clients (lastName,  firstName,  middleName, phone, email) 
+                                 VALUES (@lastName, @firstName, @middleName, @phone, @email); 
+                     SET @id = @@IDENTITY;";
+
+            SQLDa.InsertCommand = new SqlCommand(sql, SQLCon);
+
+            SQLDa.InsertCommand.Parameters.Add("@id", SqlDbType.Int, 4, "id").Direction = ParameterDirection.Output;
+            SQLDa.InsertCommand.Parameters.Add("@lastName", SqlDbType.NVarChar, 40, "lastName");
+            SQLDa.InsertCommand.Parameters.Add("@firstName", SqlDbType.NVarChar, 40, "firstName");
+            SQLDa.InsertCommand.Parameters.Add("@middleName", SqlDbType.NVarChar, 40, "middleName");
+            SQLDa.InsertCommand.Parameters.Add("@phone", SqlDbType.VarChar, 12, "phone");
+            SQLDa.InsertCommand.Parameters.Add("@email", SqlDbType.NVarChar, 80, "email");
+
+            #endregion
+
+            #region update
+
+            sql = @"UPDATE Clients SET 
+                           lastName = @lastName,
+                           firstName = @firstName, 
+                           middleName = @middleName,
+                           phone = @phone,
+                           email = @email
+                    WHERE id = @id";
+
+            SQLDa.UpdateCommand = new SqlCommand(sql, SQLCon);
+            SQLDa.UpdateCommand.Parameters.Add("@id", SqlDbType.Int, 4, "id").SourceVersion = DataRowVersion.Original;
+            SQLDa.UpdateCommand.Parameters.Add("@lastName", SqlDbType.NVarChar, 40, "lastName");
+            SQLDa.UpdateCommand.Parameters.Add("@firstName", SqlDbType.NVarChar, 40, "firstName");
+            SQLDa.UpdateCommand.Parameters.Add("@middleName", SqlDbType.NVarChar, 40, "middleName");
+            SQLDa.UpdateCommand.Parameters.Add("@phone", SqlDbType.VarChar, 12, "phone");
+            SQLDa.UpdateCommand.Parameters.Add("@email", SqlDbType.NVarChar, 80, "email");
+
+            #endregion
+
+            #region delete
+
+            sql = "DELETE FROM Clients WHERE id = @id";
+
+            SQLDa.DeleteCommand = new SqlCommand(sql, SQLCon);
+            SQLDa.DeleteCommand.Parameters.Add("@id", SqlDbType.Int, 4, "id");
+
+            #endregion
+
+        }
+
+        private void SetAccessConCommands()
+        {
+
+            #region select
+
+
+            string sql = @"SELECT * FROM Purchases Order By Purchases.Id";
+            AccessDa.SelectCommand = new OleDbCommand(sql, AccessCon);
+
+            #endregion
+
+            #region insert
+
+            sql = @"INSERT INTO Purchases (email,  productCode,  productName) 
+                                 VALUES (@email,  @productCode,  @productName); 
+                     SET @id = @@IDENTITY;";
+
+            AccessDa.InsertCommand = new OleDbCommand(sql, AccessCon);
+
+            AccessDa.InsertCommand.Parameters.Add("@id", OleDbType.Integer, 4, "id").Direction = ParameterDirection.Output;
+            AccessDa.InsertCommand.Parameters.Add("@email", OleDbType.VarChar, 40, "email");
+            AccessDa.InsertCommand.Parameters.Add("@productCode", OleDbType.VarChar, 20, "productCode");
+            AccessDa.InsertCommand.Parameters.Add("@productName", OleDbType.VarChar, 255, "productName");
+
+            #endregion
+
+            #region update
+
+            sql = @"UPDATE Purchases SET 
+                           email = @email,
+                           productCode = @productCode, 
+                           productName = @productName,
+                    WHERE id = @id";
+
+            AccessDa.UpdateCommand = new OleDbCommand(sql, AccessCon);
+            AccessDa.UpdateCommand.Parameters.Add("@id", OleDbType.Integer, 4, "id").SourceVersion = DataRowVersion.Original;
+            AccessDa.UpdateCommand.Parameters.Add("@email", OleDbType.VarChar, 40, "email");
+            AccessDa.UpdateCommand.Parameters.Add("@productCode", OleDbType.VarChar, 20, "productCode");
+            AccessDa.UpdateCommand.Parameters.Add("@productName", OleDbType.VarChar, 255, "productName");
+
+            #endregion
+
+            //#region delete
+
+            //sql = "DELETE FROM Purchases WHERE id = @id";
+
+            //AccessDa.DeleteCommand = new SqlCommand(sql, SQLCon);
+            //AccessDa.DeleteCommand.Parameters.Add("@id", SqlDbType.Int, 4, "id");
+
+            //#endregion
+
+        }
+
 
 
         private void AccessCon_StateChange(object sender, StateChangeEventArgs e)

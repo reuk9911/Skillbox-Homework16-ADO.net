@@ -162,5 +162,11 @@ namespace Homework16
                 Db.SQLDa.Update(Db.Ds, "Clients");
             }
         }
+
+        private void sqlGridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            row = (DataRowView)sqlGridView.SelectedItem;
+            Db.AccessDa.Fill(Db.Ds, "Purchases");
+        }
     }
 }

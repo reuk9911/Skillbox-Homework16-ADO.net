@@ -51,7 +51,7 @@
           AutoGenerateColumns="False" 
           
           IsReadOnly="False" 
-          Grid.Column="0" CurrentCellChanged="sqlGridView_CurrentCellChanged" RowEditEnding="sqlGridView_RowEditEnding">
+          Grid.Column="0" CurrentCellChanged="sqlGridView_CurrentCellChanged" RowEditEnding="sqlGridView_RowEditEnding" SelectionChanged="sqlGridView_SelectionChanged">
 
             <DataGrid.Columns>
                 <DataGridTextColumn x:Name="idSql" 

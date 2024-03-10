@@ -64,44 +64,7 @@ namespace Homework16
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
         }
 
-        //public Database(string SQLConString, string AccessConString)
-        //{
-        //    sqlConState = "Unknown";
-        //    accessConState = "Unknown";
 
-        //    SQLCon = new SqlConnection(SQLConString);
-        //    SQLDt = new DataTable("Clients");
-        //    string sql = @"SELECT * FROM Clients";
-            
-        //    if (SQLCon.State!= ConnectionState.Closed) 
-        //        SQLCon.Close();
-            
-
-        //    SQLCon.Open();
-        //    SQLDa = new SqlDataAdapter(sql, SQLCon);
-        //    SQLDa.Fill(SQLDt);
-        //    //SQLCon.Close();
-
-        //    AccessCon = new OleDbConnection(AccessConString);
-        //    AccessDt = new DataTable("Purchases");
-        //    sql = "SELECT * FROM Purchases";
-
-        //    if (AccessCon.State != ConnectionState.Closed)
-        //        AccessCon.Close();
-        //    AccessCon.Open();
-        //    AccessDa = new OleDbDataAdapter(sql, AccessCon);
-        //    AccessDa.Fill(AccessDt);
-        //    //AccessCon.Close();
-
-        //    Ds = new DataSet();
-        //    Ds.Tables.Add(SQLDt);
-        //    Ds.Tables.Add(AccessDt);
-
-        //    sqlConState = SQLCon.State.ToString();
-        //    accessConState = AccessCon.State.ToString();
-        //    SQLCon.StateChange += SQLCon_StateChange;
-        //    AccessCon.StateChange += AccessCon_StateChange;
-        //}
         public Database()
         {
             sqlConState = "Unknown";
@@ -329,8 +292,9 @@ namespace Homework16
             #region select
 
 
-            string sql = @"SELECT * FROM Purchases Order By Purchases.Id";
+            string sql = @"SELECT * FROM Purchases WHERE Purchases.email = @email Order By Purchases.Id";
             AccessDa.SelectCommand = new OleDbCommand(sql, AccessCon);
+            AccessDa.SelectCommand.Parameters.Add("@email", OleDbType.VarChar, 40, "reuk9911@yandex.ru");
 
             #endregion
 

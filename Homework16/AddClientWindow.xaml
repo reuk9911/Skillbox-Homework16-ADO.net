@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Homework16"
         mc:Ignorable="d"
-        Title="AddClientWindow" Height="300" Width="400">
+        Title="Добавить клиента" Height="270" Width="380">
     <Window.Resources>
 
         <Style TargetType="TextBlock" x:Key="TextBlockStyle">
             <Setter Property="Grid.Column" Value="0" />
             <Setter Property="FontSize" Value="20" />
-            <Setter Property="Margin" Value="10" />
+            <Setter Property="Margin" Value="3,3,3,3" />
         </Style>
 
         <Style TargetType="TextBox" x:Key="TextBoxStyle">
@@ -41,13 +41,13 @@
         <TextBlock Grid.Row="2" Text="Отчество" Style="{StaticResource TextBlockStyle}"/>
         <TextBlock Grid.Row="3" Text="Телефон" Style="{StaticResource TextBlockStyle}"/>
         <TextBlock Grid.Row="4" Text="Email" Style="{StaticResource TextBlockStyle}"/>
-        
+
         <TextBox Grid.Row="0" Style="{StaticResource TextBoxStyle}" x:Name="txtLastName"/>
         <TextBox Grid.Row="1" Style="{StaticResource TextBoxStyle}" x:Name="txtFirstName"/>
         <TextBox Grid.Row="2" Style="{StaticResource TextBoxStyle}" x:Name="txtMiddleName"/>
         <TextBox Grid.Row="3" Style="{StaticResource TextBoxStyle}" x:Name="txtPhone"/>
         <TextBox Grid.Row="4" Style="{StaticResource TextBoxStyle}" x:Name="txtEmail"/>
-        
+
         <Button Content="Добавить" Grid.Column="0" Grid.Row="5" Margin="5" FontSize="20" x:Name="okBtn" />
         <Button Content="Отмена" Grid.Column="1" Grid.Row="5" Margin="5" FontSize="20" x:Name="cancelBtn"/>
     </Grid>

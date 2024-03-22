@@ -24,9 +24,6 @@ namespace Homework16
     /// </summary>
     public partial class MainWindow : Window
     {
-        //SqlConnection con;
-        //SqlDataAdapter da;
-        //DataTable dt;
         DataRowView row;
 
         Database Db;
@@ -62,8 +59,6 @@ namespace Homework16
                 DataSource = @"C:\repos\Homework16\Homework16\Db\PurchasesDb.accdb"
             };
 
-            //Db = new Database(SQLConString.ConnectionString, 
-            //    AccConString.ConnectionString);
             Db = new Database();
 
             Db.GetData2(SQLConString.ConnectionString,
@@ -72,39 +67,12 @@ namespace Homework16
             TextBlockSQLConState.DataContext = Db;
             TextBlockAccessConState.DataContext = Db;
 
-
-
-            sqlGridView.DataContext = Db.Ds.Tables["Clients"].DefaultView;
-            accessGridView.DataContext = Db.Ds.Tables["Purchases"].DefaultView;
-
-            
-            
-
-
+            sqlGridView.DataContext = Db.SQLDt.DefaultView;
+            accessGridView.DataContext = Db.AccessDt.DefaultView;
 
             #endregion
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            if (Db.SQLCon.State == ConnectionState.Open)
-            {
-                Db.SQLCon.Close();
-            }
-            //if (Db.SQLCon.State == ConnectionState.Closed)
-            //{
-            //    Db.SQLCon.Open();
-
-            //}
-            if (Db.AccessCon.State == ConnectionState.Open)
-            {
-                Db.AccessCon.Close();
-            }
-            //if (Db.AccessCon.State == ConnectionState.Closed)
-            //{
-            //    Db.AccessCon.Open();
-            //}
-        }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -122,14 +90,7 @@ namespace Homework16
         {
             if (row == null) return;
             row.EndEdit();
-            Db.SQLDa.Update(Db.Ds, "Clients");
-        }
-
-        private void sqlGridView_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
-        {
-            //row.EndEdit();
-            //row = (DataRowView)sqlGridView.SelectedItem;
-            //Db.SQLDa.Update(Db.SQLDt);
+            Db.SQLDa.Update(Db.SQLDt);
         }
 
         /// <summary>
@@ -141,7 +102,7 @@ namespace Homework16
         {
             row = (DataRowView)sqlGridView.SelectedItem;
             row.Row.Delete();
-            Db.SQLDa.Update(Db.Ds, "Clients");
+            Db.SQLDa.Update(Db.SQLDt);
         }
 
         /// <summary>
@@ -151,22 +112,55 @@ namespace Homework16
         /// <param name="e"></param>
         private void MenuItemAddClientClick(object sender, RoutedEventArgs e)
         {
-            DataRow r = Db.Ds.Tables["Clients"].NewRow();
+            DataRow r = Db.SQLDt.NewRow();
             AddClientWindow add = new AddClientWindow(r);
             add.ShowDialog();
 
 
             if (add.DialogResult.Value)
             {
-                Db.Ds.Tables["Clients"].Rows.Add(r);
-                Db.SQLDa.Update(Db.Ds, "Clients");
+                Db.SQLDt.Rows.Add(r);
+                Db.SQLDa.Update(Db.SQLDt);
+            }
+        }
+
+        private void MenuItemDeletePurchaseClick(object sender, RoutedEventArgs e)
+        {
+            row = (DataRowView)sqlGridView.SelectedItem;
+            row.Row.Delete();
+            Db.AccessDa.Update(Db.AccessDt);
+        }
+
+        /// <summary>
+        /// Добавление клиента
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MenuItemAddPurchaseClick(object sender, RoutedEventArgs e)
+        {
+            DataRow r = Db.AccessDt.NewRow();
+            AddPurchaseWindow add = new AddPurchaseWindow(r);
+            add.ShowDialog();
+
+
+            if (add.DialogResult.Value)
+            {
+                Db.AccessDt.Rows.Add(r);
+                Db.AccessDa.Update(Db.AccessDt);
             }
         }
 
         private void sqlGridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             row = (DataRowView)sqlGridView.SelectedItem;
-            Db.AccessDa.Fill(Db.Ds, "Purchases");
+            if (row != null)
+            {
+                string sql = @"SELECT * FROM Purchases WHERE Purchases.email = @email Order By Purchases.Id";
+                Db.AccessDa.SelectCommand = new OleDbCommand(sql, Db.AccessCon);
+                Db.AccessDa.SelectCommand.Parameters.AddWithValue("@email", row["email"]);
+                Db.AccessDt.Clear();
+                Db.AccessDa.Fill(Db.AccessDt);
+            }
         }
     }
 }
